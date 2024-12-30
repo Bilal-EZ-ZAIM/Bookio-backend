@@ -10,17 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 
 @Module({
-  imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/library'),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    BookModule,
-    UploadsModule,
-    BorrowedBookModule,
-    AuthModule,
-    MailModule,
-  ],
+  imports: [],
   controllers: [AppController],
   providers: [AppService],
 })
