@@ -32,7 +32,7 @@ export class BookController {
 
   // Lister tous les livres
   @Get()
-  @UseGuards(AuthGuard, AdminGuard)
+
   findAll() {
     return this.bookService.findAll();
   }
