@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BookModule } from './book/book.module';
@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BorrowedBookModule } from './borrowed-book/borrowed-book.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import mongoose from 'mongoose';
 
 @Module({
   imports: [
@@ -26,5 +27,14 @@ import { MailModule } from './mail/mail.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
-//test
+export class AppModule implements OnModuleInit {
+  async onModuleInit() {
+    mongoose.connection.once('open', () => {
+      console.log('✅ Connected to the database successfully!');
+    });
+
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ Database connection error:', err);
+    });
+  }
+}
