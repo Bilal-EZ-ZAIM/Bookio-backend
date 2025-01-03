@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BookModule } from './book/book.module';
@@ -8,12 +8,35 @@ import { ConfigModule } from '@nestjs/config';
 import { BorrowedBookModule } from './borrowed-book/borrowed-book.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
       'mongodb+srv://aurabilanox:bb4aqlmeJEbdAJaT@cluster0.nph0r.mongodb.net/library',
+      {
+        connectionFactory: (connection) => {
+          mongoose.set('debug', true); // Enable debugging
+
+          connection.on('connected', () => {
+            console.log('\x1b[32m%s\x1b[0m', '🎉 MongoDB Connected Successfully!');
+          });
+
+          connection.on('connecting', () => {
+            console.log('\x1b[33m%s\x1b[0m', '⌛ Connecting to MongoDB...');
+          });
+
+          connection.on('disconnected', () => {
+            console.log('\x1b[31m%s\x1b[0m', '❌ MongoDB Disconnected');
+          });
+
+          connection.on('error', (err) => {
+            console.error('\x1b[31m%s\x1b[0m', '🔥 MongoDB Connection Error:', err);
+          });
+
+          return connection;
+        },
+      },
     ),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -27,14 +50,4 @@ import mongoose from 'mongoose';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements OnModuleInit {
-  async onModuleInit() {
-    mongoose.connection.once('open', () => {
-      console.log('✅ Connected to the database successfully!');
-    });
-
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ Database connection error:', err);
-    });
-  }
-}
+export class AppModule {}
